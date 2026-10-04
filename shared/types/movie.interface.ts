@@ -38,3 +38,5 @@ export interface MovieEpisode {
 
   sources: SourceData[];
 }
+
+export type RawMovieEpisode = Omit<MovieEpisode, 'sources'>;

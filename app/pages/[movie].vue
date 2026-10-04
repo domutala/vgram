@@ -18,7 +18,7 @@ if (!id.value) {
 }
 
 const { data, status, error } = await useFetch<Movie>(
-  `/api/shows/${id.value}`,
+  `/api/movie/${id.value}`,
   // { lazy: true },
 );
 

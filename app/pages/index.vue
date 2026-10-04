@@ -15,7 +15,7 @@ const description =
   'Retrouvez vos séries préférées sur Telegram, épisode par épisode. Découvrez les séries du moment et trouvez où les regarder.';
 
 const { data: trending } = await useFetch<MovieSearchResult[]>(
-  '/api/shows/search',
+  '/api/movie/search',
   { key: 'trending' },
 );
 

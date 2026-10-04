@@ -4,12 +4,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { TvMazeModule } from './tvmaze/tvmaze.module.js';
-import { MovieController } from './movie.controller.js';
+import { MovieController } from './movie/movie.controller.js';
 import { SourceModule } from './source/source.module.js';
 import { AccessCodesModule } from './access-codes/access-codes.module.js';
 import { TrendingModule } from './trending/trending.module.js';
 import { TvMazeService } from './tvmaze/tvmaze.service.js';
 import { CacheModule } from '@nestjs/cache-manager';
+import { TmdbModule } from './tmdb/tmdb.module.js';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { CacheModule } from '@nestjs/cache-manager';
       }),
     }),
 
+    TmdbModule,
     TvMazeModule,
     SourceModule,
     TrendingModule,

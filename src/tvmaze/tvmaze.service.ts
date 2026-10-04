@@ -6,10 +6,12 @@ import {
   Movie,
   MovieSearchResult,
   MovieEpisode,
+  RawMovieEpisode,
 } from '../../shared/types/movie.interface.js';
+import { MovieProvider, stripHtml } from '../movie/movie.provider.js';
 
 @Injectable()
-export class TvMazeService {
+export class TvMazeService implements MovieProvider {
   private client: $Fetch = ofetch.create({
     baseURL: 'https://api.tvmaze.com',
     retry: 3,
@@ -18,6 +20,24 @@ export class TvMazeService {
   });
 
   constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {}
+
+  private toShow(raw: any): Movie {
+    return {
+      id: raw.id,
+      name: raw.name,
+      type: raw.type ?? '',
+      language: raw.language ?? '',
+      genres: raw.genres ?? [],
+      status: raw.status ?? '',
+      officialSite: raw.officialSite ?? null,
+      rating: { average: raw.rating?.average ?? null },
+      image: raw.image
+        ? { medium: raw.image.medium, original: raw.image.original }
+        : null,
+      summary: stripHtml(raw.summary),
+      season: 0,
+    };
+  }
 
   async get<T = any>(
     endpoint: string,
@@ -35,44 +55,6 @@ export class TvMazeService {
     await this.cacheManager.set(cacheKey, data, ttl);
 
     return data;
-  }
-
-  async searchShows(query: string): Promise<MovieSearchResult[]> {
-    return this.get<MovieSearchResult[]>(
-      '/search/shows',
-      { q: query },
-      1800000,
-    );
-  }
-
-  async getTrending(limit = 20): Promise<MovieSearchResult[]> {
-    const date = new Date().toISOString().slice(0, 10);
-    const items = await this.get('/schedule/web', { query: { date } });
-
-    const shows = new Map<number, Movie & { weight?: number }>();
-    for (const { _embedded } of items) {
-      const show = _embedded?.show;
-      if (show?.image) shows.set(show.id, show);
-    }
-
-    const results = [...shows.values()]
-      .sort((a, b) => (b.weight ?? 0) - (a.weight ?? 0))
-      .slice(0, limit)
-      .map((show) => ({ score: show.weight ?? 0, show }));
-
-    return results;
-  }
-
-  async getShowById(id: number): Promise<Movie> {
-    return this.get<Movie>(`/shows/${id}`, undefined, 86400000);
-  }
-
-  async getShowEpisodes(showId: number): Promise<MovieEpisode[]> {
-    return this.get<MovieEpisode[]>(
-      `/shows/${showId}/episodes`,
-      undefined,
-      86400000,
-    );
   }
 
   // ==========================================
@@ -123,5 +105,62 @@ export class TvMazeService {
     }
 
     return 0;
+  }
+
+  private toEpisode(raw: any): RawMovieEpisode {
+    return {
+      id: raw.id,
+      name: raw.name,
+      season: raw.season,
+      number: raw.number ?? 0,
+      airdate: raw.airdate ?? '',
+      runtime: raw.runtime ?? 0,
+      image: raw.image
+        ? { medium: raw.image.medium, original: raw.image.original }
+        : null,
+      summary: stripHtml(raw.summary),
+      type: raw.type ?? 'regular',
+      airtime: raw.airtime ?? '',
+      airstamp: raw.airstamp ?? '',
+      rating: { average: raw.rating?.average ?? null },
+    };
+  }
+
+  async searchShows(query: string): Promise<MovieSearchResult[]> {
+    const raw = await this.get<{ score: number; show: any }[]>(
+      '/search/shows',
+      { q: query },
+      1_800_000,
+    );
+    return raw.map(({ score, show }) => ({ score, show: this.toShow(show) }));
+  }
+
+  async getTrending(limit = 20): Promise<MovieSearchResult[]> {
+    const date = new Date().toISOString().slice(0, 10);
+    const items = await this.get<any[]>('/schedule/web', { date }, 3_600_000);
+
+    const shows = new Map<number, any>();
+    for (const { _embedded } of items) {
+      const show = _embedded?.show;
+      if (show?.image) shows.set(show.id, show);
+    }
+
+    return [...shows.values()]
+      .sort((a, b) => (b.weight ?? 0) - (a.weight ?? 0))
+      .slice(0, limit)
+      .map((show) => ({ score: show.weight ?? 0, show: this.toShow(show) }));
+  }
+
+  async getShowById(id: number): Promise<Movie> {
+    return this.toShow(await this.get(`/shows/${id}`, undefined, 86_400_000));
+  }
+
+  async getShowEpisodes(showId: number): Promise<RawMovieEpisode[]> {
+    const raw = await this.get<any[]>(
+      `/shows/${showId}/episodes`,
+      undefined,
+      86_400_000,
+    );
+    return raw.map((ep) => this.toEpisode(ep));
   }
 }

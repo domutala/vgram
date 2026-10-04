@@ -71,7 +71,7 @@ Contraintes liées à `tsx` (esbuild n'émet pas `emitDecoratorMetadata`) : chaq
 
 Les routes marquées 🔒 exigent un code d'accès dans l'en-tête `Authorization` (`<code>` ou `Bearer <code>`).
 
-### Séries : `/api/shows`
+### Séries : `/api/movie`
 
 | Méthode | Route | Description |
 | --- | --- | --- |
@@ -136,7 +136,7 @@ curl -X POST localhost:3000/api/source \
   }'
 ```
 
-`databaseId` est l'id de l'**épisode**, `tvId` celui de la **série** (visible dans `/api/shows/:id`).
+`databaseId` est l'id de l'**épisode**, `tvId` celui de la **série** (visible dans `/api/movie/:id`).
 
 ## Structure
 

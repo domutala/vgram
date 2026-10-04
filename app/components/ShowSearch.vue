@@ -8,7 +8,7 @@ const {
   error,
   execute, // Fonction pour exécuter / relancer la requête à la demande
   clear, // Fonction pour réinitialiser les données
-} = await useFetch(`/api/shows/search`, {
+} = await useFetch(`/api/movie/search`, {
   immediate: false, // Empêche l'exécution automatique au chargement de la page
   lazy: true, // Empêche le blocage de la navigation
   transform: (data: any[]) => data.map((item) => item.show),

@@ -7,7 +7,7 @@ import type {
 const emit = defineEmits<{ select: [movie: Movie] }>();
 
 const { data: trending } = await useFetch<MovieSearchResult[]>(
-  '/api/shows/search',
+  '/api/movie/search',
   { key: 'trending' },
 );
 </script>

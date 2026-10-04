@@ -18,7 +18,7 @@ const {
   pending,
   error,
   execute,
-} = await useFetch<{ show: Movie; score: number }[]>('/api/shows/search', {
+} = await useFetch<{ show: Movie; score: number }[]>('/api/movie/search', {
   watch: false,
   query: computed(() => ({ q: searchQuery.value.trim() || undefined })),
 });

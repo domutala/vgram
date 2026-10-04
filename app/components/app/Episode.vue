@@ -7,7 +7,7 @@ const {
   data: episodes,
   status,
   error,
-} = await useFetch<MovieEpisode[]>(`/api/shows/${props.id}/episodes`, {
+} = await useFetch<MovieEpisode[]>(`/api/movie/${props.id}/episodes`, {
   lazy: true,
 });
 

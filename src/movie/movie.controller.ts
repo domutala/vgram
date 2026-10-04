@@ -1,18 +1,20 @@
 import { Controller, Get, Param, Query, ParseIntPipe } from '@nestjs/common';
-import { TvMazeService } from './tvmaze/tvmaze.service.js';
+import { TvMazeService } from '../tvmaze/tvmaze.service.js';
 import {
   Movie,
   MovieSearchResult,
   MovieEpisode,
-} from '../shared/types/movie.interface.js';
-import { SourceService } from './source/source.service.js';
-import { Source, SourceMediaType } from './source/source.entity.js';
-import { TrendingService } from './trending/trending.service.js';
+} from '../../shared/types/movie.interface.js';
+import { SourceService } from '../source/source.service.js';
+import { Source, SourceMediaType } from '../source/source.entity.js';
+import { TrendingService } from '../trending/trending.service.js';
+import { TmdbService } from '../tmdb/tmdb.service.js';
 
-@Controller('api/shows')
+@Controller('api/movie')
 export class MovieController {
   constructor(
     private readonly tvMazeService: TvMazeService,
+    private readonly tmdbService: TmdbService,
     private readonly sourceService: SourceService,
     private readonly trending: TrendingService,
   ) {}
@@ -34,7 +36,7 @@ export class MovieController {
   @Get('search')
   async searchShows(@Query('q') query: string): Promise<MovieSearchResult[]> {
     if (!query?.trim()) return this.trending.getMovies();
-    return await this.tvMazeService.searchShows(query);
+    return await this.tmdbService.searchShows(query);
   }
 
   /**
@@ -43,7 +45,7 @@ export class MovieController {
    */
   @Get(':id')
   async getShowById(@Param('id', ParseIntPipe) id: number): Promise<Movie> {
-    return await this.tvMazeService.getShowById(id);
+    return await this.tmdbService.getShowById(id);
   }
 
   /**
@@ -54,7 +56,7 @@ export class MovieController {
   async getShowEpisodes(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<MovieEpisode[]> {
-    return this.withSources(await this.tvMazeService.getShowEpisodes(id));
+    return this.withSources(await this.tmdbService.getShowEpisodes(id));
   }
 
   /**
@@ -64,8 +66,8 @@ export class MovieController {
   @Get(':id/full')
   async getShowWithEpisodes(@Param('id', ParseIntPipe) id: number) {
     const [show, episodes] = await Promise.all([
-      this.tvMazeService.getShowById(id),
-      this.tvMazeService.getShowEpisodes(id),
+      this.tmdbService.getShowById(id),
+      this.tmdbService.getShowEpisodes(id),
     ]);
 
     return { ...show, episodes: await this.withSources(episodes) };
