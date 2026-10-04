@@ -131,9 +131,14 @@ watchDebounced(searchQuery, onSearch, { debounce: 400 });
           <UCard
             v-for="i in 10"
             :key="i"
-            class="overflow-hidden flex flex-col h-full p-0 shadow-none rounded-none border-0"
+            class="overflow-hidden flex flex-col h-full p-0 shadow-none rounded-none border-0 relative"
           >
-            <USkeleton class="aspect-2/3 w-full bg-muted" />
+            <USkeleton class="aspect-2/3 w-full bg-foreground/10" />
+
+            <div class="space-y-2 p-6 absolute w-full bottom-0">
+              <USkeleton class="h-4 w-70 bg-foreground/10" />
+              <USkeleton class="h-4 w-20 bg-foreground/10" />
+            </div>
           </UCard>
         </template>
 
