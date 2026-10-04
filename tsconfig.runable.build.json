@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.server.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist",
+    "declaration": false,
+    "incremental": false
+  },
+  "include": ["runable.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}
