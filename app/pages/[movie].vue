@@ -46,7 +46,7 @@ const canonical = computed(
 const title = computed(() =>
   telegram.value?.exists
     ? `${movie.value.name} – Regarder en streaming sur Telegram`
-    : `${movie.value.name} – Regarder la série en streaming`,
+    : `${movie.value.name} – Regarder streaming`,
 );
 
 const description = computed(() => {

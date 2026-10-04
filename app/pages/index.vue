@@ -10,9 +10,9 @@ const SITE_NAME = useRuntime().public.siteName;
 
 const router = useRouter();
 
-const title = `${SITE_NAME} – Où regarder vos séries en streaming`;
+const title = `${SITE_NAME} – Où regarder vos films et séries en streaming`;
 const description =
-  'Retrouvez vos séries préférées sur Telegram, épisode par épisode. Découvrez les séries du moment et trouvez où les regarder.';
+  'Retrouvez vos films et séries préférées sur Telegram, épisode par épisode. Découvrez les films et séries du moment et trouvez où les regarder.';
 
 const { data: trending } = await useFetch<MovieSearchResult[]>(
   '/api/movie/search',
@@ -77,7 +77,7 @@ function open(movie: Movie) {
   <div class="container mx-auto py-12 px-4 max-w-9xl">
     <div class="py-10">
       <h1 class="text-center text-3xl font-semibold mb-12">
-        Trouvez où regarder vos séries sur Telegram
+        Trouvez où regarder vos films et séries sur Telegram
       </h1>
     </div>
 

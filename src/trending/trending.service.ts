@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import type { MovieSearchResult } from '../../shared/types/movie.interface.js';
 import { TvMazeService } from '../tvmaze/tvmaze.service.js';
 import { TrendingShow } from './trending-show.entity.js';
+import { TmdbService } from '../tmdb/tmdb.service.js';
 
 const CACHE_KEY = 'trending:list';
 
@@ -17,15 +18,17 @@ export class TrendingService {
   constructor(
     @InjectRepository(TrendingShow)
     private readonly repo: Repository<TrendingShow>,
+
     private readonly tvMaze: TvMazeService,
+    private readonly tmdb: TmdbService,
   ) {}
 
   async getMovies(): Promise<MovieSearchResult[]> {
     const rows = await this.repo.find({ order: { position: 'ASC' } });
-    if (!rows.length) return this.tvMaze.getTrending();
+    if (!rows.length) return this.tmdb.getTrending();
 
     const settled = await Promise.allSettled(
-      rows.map((row) => this.tvMaze.getShowById(row.showId)),
+      rows.map((row) => this.tmdb.getShowById(row.showId)),
     );
     const results = settled.flatMap((result, i) =>
       result.status === 'fulfilled'
@@ -37,7 +40,7 @@ export class TrendingService {
   }
 
   async add(showId: number, position?: number) {
-    await this.tvMaze.getShowById(showId);
+    await this.tmdb.getShowById(showId);
 
     if (await this.repo.existsBy({ showId })) {
       throw new ConflictException('This show is already in trending');
