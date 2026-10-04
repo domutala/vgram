@@ -8,7 +8,8 @@
   "scripts": {
     "prepare": "runable prepare",
     "build": "nest build",
-    "postbuild": "tsc -p tsconfig.runable.build.json && runable build",
+    "postbuild": "runable build",
+    "postbuild0": "tsc -p tsconfig.runable.build.json && runable build",
     "deploy": "nest deploy",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
